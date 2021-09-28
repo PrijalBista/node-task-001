@@ -32,7 +32,10 @@ export default class CompanyController {
 
   public async show({ params }: HttpContextContract) {
     const company = await Company.findOrFail(params.id)
-    company.load('companyCategory')
+    if (company.categoryId) {
+      await company.load('companyCategory')
+      return company
+    }
     return company
   }
 
@@ -52,7 +55,10 @@ export default class CompanyController {
     }
     // console.log(data)
     if (await company.merge(data).save()) {
-      await company.load('companyCategory')
+      if (company.categoryId) {
+        await company.load('companyCategory')
+        return company
+      }
       return company
     }
     return response.status(500)
