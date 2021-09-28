@@ -18,7 +18,7 @@ export default class CompanyController {
     const image = request.file('image')
     if (image) {
       // handle image
-      await image.moveToDisk('./company/')
+      await image.moveToDisk('company')
       company.image = image.fileName || null
     }
 
@@ -28,7 +28,8 @@ export default class CompanyController {
   }
 
   public async show({ params }: HttpContextContract) {
-    const company = await Company.query().where('id', params.id).preload('companyCategory')
+    const company = await Company.findOrFail(params.id)
+    company.load('companyCategory')
     return company
   }
 
@@ -42,9 +43,9 @@ export default class CompanyController {
     if (image) {
       // delete previos image if exists
       if (company.image) {
-        await Drive.delete(`./company/${company.image}`)
+        await Drive.delete(`company/${company.image}`)
       }
-      await image.moveToDisk('./company/')
+      await image.moveToDisk('company')
       company.image = image.fileName || null
     }
 
@@ -58,7 +59,7 @@ export default class CompanyController {
   public async destroy({ params, response }: HttpContextContract) {
     const company = await Company.findOrFail(params.id)
     if (company.image) {
-      await Drive.delete(`./company/${company.image}`)
+      await Drive.delete(`company/${company.image}`)
     }
     await company.delete()
     return response.status(204)

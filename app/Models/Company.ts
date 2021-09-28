@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { belongsTo, BelongsTo, BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import Drive from '@ioc:Adonis/Core/Drive'
 import CompanyCategory from './CompanyCategory'
+import { belongsTo, BelongsTo, BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Company extends BaseModel {
   @column({ isPrimary: true })
@@ -12,7 +13,11 @@ export default class Company extends BaseModel {
   @column()
   public title: string
 
-  @column()
+  @column({
+    serialize: (value: string | null) => {
+      return value ? `uploads/company/${value}` : value
+    },
+  })
   public image: string | null
 
   @column()
