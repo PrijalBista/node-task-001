@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon'
-import Drive from '@ioc:Adonis/Core/Drive'
 import CompanyCategory from './CompanyCategory'
 import { belongsTo, BelongsTo, BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
