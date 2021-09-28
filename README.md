@@ -268,3 +268,97 @@ Learn about responses here
 https://docs.adonisjs.com/guides/response
 
 
+###### Create CompanyController
+```bash
+node ace make:controller -r true -e true Api/CompanyController
+```
+Here we need to handle file upload, which can be done with the help of `Drive`
+https://docs.adonisjs.com/guides/drive
+
+The Controller code looks like this
+```javascript
+import Company from 'App/Models/Company'
+import Drive from '@ioc:Adonis/Core/Drive'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+
+export default class CompanyController {
+  public async index({ request }: HttpContextContract) {
+    const page = request.input('page', 1)
+    const category = await Company.query().preload('companyCategory').paginate(page, 30)
+    return category.toJSON()
+  }
+
+  public async store({ request }: HttpContextContract) {
+    const company = new Company()
+    company.title = request.input('title')
+    company.description = request.input('description')
+    company.status = request.input('status')
+    company.categoryId = request.input('category_id')
+    const image = request.file('image')
+    if (image) {
+      // handle image
+      await image.moveToDisk('company')
+      company.image = image.fileName || null
+    }
+
+    await company.save()
+    await company.load('companyCategory')
+    return company
+  }
+
+  public async show({ params }: HttpContextContract) {
+    const company = await Company.findOrFail(params.id)
+    company.load('companyCategory')
+    return company
+  }
+
+  public async update({ request, params, response }: HttpContextContract) {
+    const company = await Company.findOrFail(params.id)
+    company.title = request.input('title')
+    company.description = request.input('description')
+    company.status = request.input('status')
+    company.categoryId = request.input('category_id')
+    const image = request.file('image')
+    if (image) {
+      // delete previos image if exists
+      if (company.image) {
+        await Drive.delete(`company/${company.image}`)
+      }
+      await image.moveToDisk('company')
+      company.image = image.fileName || null
+    }
+
+    if (await company.save()) {
+      await company.load('companyCategory')
+      return company
+    }
+    return response.status(500)
+  }
+
+  public async destroy({ params, response }: HttpContextContract) {
+    const company = await Company.findOrFail(params.id)
+    if (company.image) {
+      await Drive.delete(`company/${company.image}`)
+    }
+    await company.delete()
+    return response.status(204)
+  }
+}
+
+```
+> Note TODO request validation
+
+Then on api response i added proper relative url by mutating image property in Company Model as such
+
+```javascript
+export default class Company extends BaseModel {
+//...
+  @column({
+    serialize: (value: string | null) => {
+      return value ? `uploads/company/${value}` : value
+    },
+  })
+  public image: string | null
+//...
+}
+```
