@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import CompanyCategory from 'App/Models/CompanyCategory'
+import CompanyCategoryValidator from 'App/Validators/CompanyCategoryValidator'
 
 export default class CompanyCategoryController {
   public async index({ request }: HttpContextContract) {
@@ -9,8 +10,9 @@ export default class CompanyCategoryController {
   }
 
   public async store({ request }: HttpContextContract) {
+    const payload = await request.validate(CompanyCategoryValidator)
     const category = new CompanyCategory()
-    category.title = request.input('title')
+    category.title = payload.title
     await category.save()
     return category
   }
@@ -21,8 +23,9 @@ export default class CompanyCategoryController {
   }
 
   public async update({ response, request, params }: HttpContextContract) {
+    const payload = await request.validate(CompanyCategoryValidator)
     const category = await CompanyCategory.findOrFail(params.id)
-    category.title = request.input('title')
+    category.title = payload.title
     if (await category.save()) {
       await category.load('companies')
       return category
