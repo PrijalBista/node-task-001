@@ -7,7 +7,7 @@ export default class Company extends BaseModel {
   public id: number
 
   @column()
-  public categoryId: number
+  public categoryId: number | null
 
   @column()
   public title: string
