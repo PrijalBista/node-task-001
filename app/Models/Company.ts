@@ -13,7 +13,7 @@ export default class Company extends BaseModel {
   public title: string
 
   @column()
-  public image: string
+  public image: string | null
 
   @column()
   public description: string
