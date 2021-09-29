@@ -92,7 +92,7 @@ https://docs.adonisjs.com/reference/orm/decorators
 
 
 ###### Building Factories and Seeders.
-Since , this is a trivial task factory for both models was made in a single database/factories class
+Since , this is a trivial task factory for both models was made in a single database/factories.ts file
 ```javascript
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import CompanyCategory from 'App/Models/CompanyCategory'
