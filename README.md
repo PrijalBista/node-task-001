@@ -348,7 +348,7 @@ export default class CompanyController {
 ```
 > Note TODO request validation
 
-Then on api response i added proper relative url by mutating image property in Company Model as such
+Then on api response i added proper relative url by mutating image property in Company Model as such (Mutators)
 
 ```javascript
 export default class Company extends BaseModel {
@@ -362,3 +362,14 @@ export default class Company extends BaseModel {
 //...
 }
 ```
+
+###### Creating request validators
+```bash
+node ace make:validator CreateUser
+```
+More info on validators here https://docs.adonisjs.com/guides/validator/introduction
+
+Created create and update validator for company, and only 1 validator for companycategory
+
+
+
